@@ -14,7 +14,7 @@ pip install -r requirements.txt
 ```
 
 # For downloading
-1. Press any key when prompted to download or:
+1. Press y when prompted to download or
 2. Use any download manager such as [jdownloader2](https://jdownloader.org/download/index) and use the csv file to get the links :)
 
 # Usage

@@ -30,7 +30,7 @@ k=1
 # https://yugenani.me/watch/fef088de-e09b-4e07-91c2-c07066ee0c60/
 
 start=int(input('from episode number: '))-1
-end=int(input('till episode number: '))+1
+end=int(input('till episode number: '))
 
 try:
     for i , j in zip(titles,episode_urls[start:end]):
@@ -101,5 +101,5 @@ def downloader(c):
         wget.download(i, os.getcwd())
 print(dow_urls)
 
-if input('download now? y/n')=='y':
+if input('download now? y/n: ')=='y':
     downloader(dow_urls)

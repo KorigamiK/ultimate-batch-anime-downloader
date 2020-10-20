@@ -8,14 +8,15 @@ The new and improved version of batch anime downloader. Made a tleast 10x more e
 ```
 pip install beautifulsoup4 requests lxml wget
 ```
-3. Or you cam simply
+3. Or you can simply (Check that you are on the same directory as requirements.py)
 ```
 pip install -r requirements.txt
 ```
 
 # For downloading
 1. Press y when prompted to download or
-2. Use any download manager such as [jdownloader2](https://jdownloader.org/download/index) and use the csv file to get the links :)
+2. Use any download manager such as [jdownloader2](https://jdownloader.org/download/index) and copy the links from the csv file :)
+  and use its built in feature to parse links from clipboard :)
 
 # Usage
 1. It uses [this website](https://yugenani.me) to scrape

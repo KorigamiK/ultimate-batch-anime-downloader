@@ -22,5 +22,12 @@ pip install -r requirements.txt
 1. It uses [this website](https://yugenani.me) to scrape
 2. A sample url to pass would be https://yugenani.me/anime/boruto-naruto-next-generations/watch/
 3. Follow the instruction when you run the scripts
-
+4. Run the update anime_list.py if you are not able to find any new anime (It takes a lot of time to update) 
+5. To use the anime_list.csv method: 
+   - Open it using notepad
+   - Use Control+F and type the anime name you want
+   - Copy the name you find there
+   - Use this name when you run downloader.py
+   - Bonus: You can try to get lucky by typing the name of the anime directly !
+6. ENJOY !
 > Do leave your suggestion and queries  :)

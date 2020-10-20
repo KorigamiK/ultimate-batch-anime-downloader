@@ -34,12 +34,18 @@ def downloader(src_url):
     # https://yugenani.me/watch/fef088de-e09b-4e07-91c2-c07066ee0c60/
 
     while True:
-        try:
-            start = int(input('from episode number: ')) - 1
-            end = int(input('till episode number: '))
+        all_episodes = input('Download all episodes? (If no, you\'ll be able to select a specific range) y/n: ')
+        if all_episodes == 'y':
+            start = 0
+            end = len(titles)
             break
-        except:
-            print('Enter correct input and in the specified range')
+        else:
+            try:
+                start = int(input('from episode number: ')) - 1
+                end = int(input('till episode number: '))
+                break
+            except:
+                print('Enter correct input and in the specified range')
 
     try:
         for i, j in zip(titles, episode_urls[start:end]):
@@ -214,4 +220,3 @@ def go():
 
 
 go()
-

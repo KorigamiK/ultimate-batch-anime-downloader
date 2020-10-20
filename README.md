@@ -19,6 +19,7 @@ pip install -r requirements.txt
   and use its built in feature to parse links from clipboard :)
 
 # Usage
+0. ### Make sure that you keep all the files in the same folder !
 1. It uses [this website](https://yugenani.me) to scrape
 2. A sample url to pass would be https://yugenani.me/anime/boruto-naruto-next-generations/watch/
 3. Follow the instruction when you run the scripts

@@ -5,9 +5,11 @@ import csv
 import os
 import wget
 import io
+from multiprocessing.pool import ThreadPool
+
 
 def downloader(src_url):
-    print('\nGetting Episodes\n')    
+    print('\nGetting Episodes\n')
     src = requests.get(src_url).text
     soup = bs(src, 'lxml')
     try:
@@ -61,7 +63,7 @@ def downloader(src_url):
         try:
             soupinger = bs(requests.get(a).text, 'lxml')
             final[j][2] = (
-            str(soupinger.find('div', class_="videocontent")).split(';')[-3].split('\n')[-3][:-2].strip()[1:])
+                str(soupinger.find('div', class_="videocontent")).split(';')[-3].split('\n')[-3][:-2].strip()[1:])
         except:
             pass
     for j, i in enumerate(final):
@@ -69,17 +71,17 @@ def downloader(src_url):
 
     g: List[str] = ['(HDP - mp4)', '(360P - mp4)', '(720P - mp4)', '(1080P - mp4)']
     print()
-    for j,i in enumerate(g):
-        print(j,i)
-
+    for j, i in enumerate(g):
+        print(j, i)
+    print()
     while True:
         try:
             z = int(input('Enter the index number from the list (eg: 0, 1, 2, 3 ..): '))
             break
         except:
             print('Please enter the correct integer')
-            
-    geek = input('geek mode? y/n')
+
+    geek = input('geek mode? y/n: ')
 
     for j, i in enumerate(final):
         try:
@@ -96,6 +98,7 @@ def downloader(src_url):
                 except Exception:
                     pass
         except Exception:
+            print('Selected Quality is not available yet :( try another quality!')
             pass
 
     name = src_url.split('/')[-3]
@@ -108,20 +111,38 @@ def downloader(src_url):
 
     print('csv created check folder !')
 
-
-    def downloader(c):
+    def make_dirs():
         if not os.path.exists('{}'.format(name)):
             os.makedirs('{}'.format(name))
         os.chdir('./{}'.format(name))
+
+    def downloader(c):
+        make_dirs()
         for i in c:
             wget.download(i, os.getcwd())
 
+    def download_url(url):
+        file_name = url.split('token')[0].split('/')[-1][:-1]
+        print("downloading: ", file_name)
+        r = requests.get(url, stream=True)
+        if r.status_code == requests.codes.ok:
+            with open(file_name, 'wb') as f:
+                for data in r:
+                    f.write(data)
+        return file_name
 
     if geek == 'y':
         print(dow_urls)
 
     if input('download {} now? y/n: '.format(name)) == 'y':
-        downloader(dow_urls)
+        if input('Want parallel downloads? (Sinificantly faster but no progress bar yet!) y/n: ') == 'y':
+            make_dirs()
+            results = ThreadPool(5).imap_unordered(download_url, dow_urls)
+            for r in results:
+                print(r)
+        else:
+            downloader(dow_urls)
+
 
 def give_url():
     while True:
@@ -133,48 +154,64 @@ def give_url():
             break
         except:
             print('Give a correct url (check for /watch/ at the end)')
-            
+
 
 def use_csv():
-    inp_name=input('Enter the correct name from the csv file (otherwise it will take a long time to show that you have made an error): ')
-    with io.open('anime_list.csv','r',encoding="utf-8") as csv_file:
+    inp_name = input(
+        'Enter the correct name from the csv file (otherwise it will take a long time to show that you have made an error): ')
+    with io.open('anime_list.csv', 'r', encoding="utf-8") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
-            if line_count%2==0:
-                if inp_name==row[0]:
+            if line_count % 2 == 0:
+                if inp_name == row[0]:
                     print(row[1])
                     return row[1]
                     break
-                line_count+=1
+                line_count += 1
             else:
-                line_count+=1
-        print(f'Processed {line_count//2} lines.')
+                line_count += 1
+        print(f'Processed {line_count // 2} lines.')
+
 
 def many_anime():
-    number=int(input('Enter the number of anime you want: '))
-    for i in range(number):
-        downloader(use_csv())
-        
-def go():
-    options=['Give a specific URL','Use the anime_list.csv to get many anime!','SEARCH (Coming soon !)\n']
-    for j,i in enumerate(options):
-        print(j,i)
     while True:
         try:
-            begin=int(input('Enter the option number: '))
+            number = int(input('Enter the number of anime you want: '))
+            break
+        except Exception:
+            print('Enter correct number of series')
+    for i in range(number):
+        while True:
+            var = use_csv()
+            if var == None:
+                print('series not found Enter EXACT name')
+                pass
+            else:
+                downloader(var)
+                break
+
+
+def go():
+    options = ['Give a specific URL', 'Use the anime_list.csv to get many anime!', 'SEARCH (Coming soon !)\n']
+    for j, i in enumerate(options):
+        print(j, i)
+    while True:
+        try:
+            begin = int(input('Enter the option number: '))
             break
         except Exception:
             print('Enter correct option! \n')
-    if begin==0:        
+    if begin == 0:
         downloader(give_url())
         print('\nOMEDETO !!\n')
-    elif begin==1:
+    elif begin == 1:
         many_anime()
         print('\nOMEDETO !!\n')
     else:
         print('Not implemented yet! Check https://github.com/KorigamiK/ultimate-batch-anime-downloader ')
         go()
-        
+
+
 go()
 

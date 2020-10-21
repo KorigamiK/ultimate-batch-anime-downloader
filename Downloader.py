@@ -281,7 +281,7 @@ def go():
         many_anime()
         print('\nOMEDETO !!\n')
     else:
-        print('\nNot implemented yet! Check https://github.com/KorigamiK/ultimate-batch-anime-downloader\n ')
+        print('\nNot implemented yet! Check \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader\n ')
         go()
 
 go()

@@ -8,7 +8,7 @@ import io
 from multiprocessing.pool import ThreadPool
 
 def list_str(s):
-    return ' '.join(map(str, s))
+    return ' '.join(map(to_lower, s))
 
 def to_lower(a):
     return a.lower()
@@ -114,7 +114,11 @@ def downloader(src_url):
     geek = input('geek mode? y/n: ')
     g = list()
     # to make g (quality list)
-    vid_selector(final[-1][-1])
+    try:
+        vid_selector(final[-1][-1])
+    except:
+        print('There should atleast be 1 episode selected')
+        return None
 
     print()
     for j, i in enumerate(g):
@@ -258,7 +262,6 @@ def go():
     else:
         print('Not implemented yet! Check https://github.com/KorigamiK/ultimate-batch-anime-downloader ')
         go()
-
 
 go()
 

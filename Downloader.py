@@ -7,7 +7,27 @@ import wget
 import io
 from multiprocessing.pool import ThreadPool
 
+def list_str(s):
+    return ' '.join(map(str, s))
 
+def to_lower(a):
+    return a.lower()
+
+def rem_special(a):
+    v=list(a)
+    for j,i in enumerate(v):
+        if i.isalnum():
+            pass
+        else:
+            v.pop(j)
+    return list_str(v)
+
+def check(x,y):
+    if rem_special(x)==rem_special(y):
+        return True
+    else :
+        return False
+    
 def downloader(src_url):
     print('\nGetting Episodes\n')
     src = requests.get(src_url).text
@@ -35,11 +55,17 @@ def downloader(src_url):
 
     while True:
         try:
-            start = int(input('from episode number: ')) - 1
-            end = int(input('till episode number: '))
+            if input('Want all episodes? y/n: ') != 'y':
+                start = int(input('from episode number: ')) - 1
+                end = int(input('till episode number: '))
+            else:
+                start = 0
+                end = len(titles)
             break
         except:
             print('Enter correct input and in the specified range')
+            
+    print('Getting links please wait..\n')
 
     try:
         for i, j in zip(titles, episode_urls[start:end]):
@@ -66,41 +92,61 @@ def downloader(src_url):
                 str(soupinger.find('div', class_="videocontent")).split(';')[-3].split('\n')[-3][:-2].strip()[1:])
         except:
             pass
-    for j, i in enumerate(final):
-        final[j].pop(1)
 
-    g: List[str] = ['(HDP - mp4)', '(360P - mp4)', '(720P - mp4)', '(1080P - mp4)']
+    def vid_selector(link):
+        sauce = bs(requests.get(link).content, 'lxml')
+        for i in sauce.find_all('div', class_="dowload"):
+            quality = i.text.strip().split("\n")
+            if len(quality) == 2:
+                g.append(quality[1].strip())
+
+    def get_link(link, opt):
+        sauce = bs(requests.get(link).content, 'lxml')
+        for i in sauce.find_all('div', class_="dowload"):
+            quality = i.text.strip().split("\n")
+            if len(quality) == 2:
+                if g[opt] == quality[1].strip():
+                    ret = i.a['href']
+                    if geek == 'y':
+                        print(ret)
+                    return ret
+
+    geek = input('geek mode? y/n: ')
+    g = list()
+    # to make g (quality list)
+    vid_selector(final[-1][-1])
+
     print()
     for j, i in enumerate(g):
         print(j, i)
     print()
+    
     while True:
         try:
-            z = int(input('Enter the index number from the list (eg: 0, 1, 2, 3 ..): '))
+            z = int(input('Enter the quality number (eg: 0, 1, 2, 3 ..): '))
             break
         except:
             print('Please enter the correct integer')
-
-    geek = input('geek mode? y/n: ')
+    
+    print('Scraping links please wait ...\n')
 
     for j, i in enumerate(final):
-        try:
-            sou = requests.get(i[1]).text
-            souper = bs(sou, 'lxml')
-            for k in souper.find_all('div', class_="dowload"):
-                # get all available formats from here
-                try:
-                    if g[z] == k.text.split('\n')[1].strip():
-                        if geek == 'y':
-                            print(k.text.split('\n')[1].strip())
-                            print(k.a['href'])
-                        final[j][1] = k.a['href']
-                except Exception:
-                    pass
-        except Exception:
-            print('Selected Quality is not available yet :( try another quality!')
-            pass
+        final[j].pop(1)
 
+    def final_updater():
+        for j, i in enumerate(final):
+            try:
+                sou = requests.get(i[1]).text
+            except requests.exceptions.RequestException:
+                print('bad url (dead) {} so it will be removed'.format(final[j][1]))
+                final.pop(j)
+                continue
+            if geek == 'y':
+                print(j)
+            final[j][1] = get_link(i[1], z)
+
+    final_updater()
+    
     name = src_url.split('/')[-3]
 
     with open('{}.csv'.format(name), 'w') as f:
@@ -121,10 +167,10 @@ def downloader(src_url):
         for i in c:
             wget.download(i, os.getcwd())
 
-    def download_url(url):
-        file_name = url.split('token')[0].split('/')[-1][:-1]
+    def download_url(link):
+        file_name = link.split('token')[0].split('/')[-1][:-1]
         print("downloading: ", file_name)
-        r = requests.get(url, stream=True)
+        r = requests.get(link, stream=True)
         if r.status_code == requests.codes.ok:
             with open(file_name, 'wb') as f:
                 for data in r:
@@ -158,13 +204,13 @@ def give_url():
 
 def use_csv():
     inp_name = input(
-        'Enter the correct name from the csv file (otherwise it will take a long time to show that you have made an error): ')
+        'Enter the full name csv file (otherwise it will wont work): ')
     with io.open('anime_list.csv', 'r', encoding="utf-8") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
             if line_count % 2 == 0:
-                if inp_name == row[0]:
+                if check(str(row[0]), inp_name):
                     print(row[1])
                     return row[1]
                     break
@@ -177,10 +223,11 @@ def use_csv():
 def many_anime():
     while True:
         try:
-            number = int(input('Enter the number of anime you want: '))
+            number = int(input('How many anime do you want?: '))
             break
         except Exception:
-            print('Enter correct number of series')
+            print('Enter correct number')
+            
     for i in range(number):
         while True:
             var = use_csv()

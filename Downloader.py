@@ -7,6 +7,27 @@ import wget
 import io
 from multiprocessing.pool import ThreadPool
 
+version = 2.9
+
+def version_check(x):
+    global cur_ver
+    soup = bs(requests.get('https://github.com/KorigamiK/ultimate-batch-anime-downloader/tags').content, 'lxml')
+    cur_ver = float(soup.find('h4', class_="flex-auto min-width-0 pr-2 pb-1 commit-title").a.text.strip())
+    if cur_ver == x:
+        return True
+    else:
+        return False
+
+def check_ver():
+    ans = input('Check for a new version ? y/n: ')
+    if ans != 'y':
+        return None
+    else :
+        if version_check(version) :
+            print("You're on the latest version ! ")
+        else :
+            print("\n !! Version {} is now available !!\n download it from: \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader/releases \n".format(cur_ver))
+
 def list_str(s):
     return ' '.join(map(to_lower, s))
 
@@ -242,9 +263,9 @@ def many_anime():
                 downloader(var)
                 break
 
-
 def go():
-    options = ['Give a specific URL', 'Use the anime_list.csv to get many anime!', 'SEARCH (Coming soon !)\n']
+    check_ver()
+    options = ['Give a specific URL', 'Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)']
     for j, i in enumerate(options):
         print(j, i)
     while True:
@@ -260,8 +281,7 @@ def go():
         many_anime()
         print('\nOMEDETO !!\n')
     else:
-        print('Not implemented yet! Check https://github.com/KorigamiK/ultimate-batch-anime-downloader ')
+        print('\nNot implemented yet! Check https://github.com/KorigamiK/ultimate-batch-anime-downloader\n ')
         go()
 
 go()
-

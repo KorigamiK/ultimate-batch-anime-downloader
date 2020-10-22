@@ -7,7 +7,7 @@ import wget
 import io
 from multiprocessing.pool import ThreadPool
 
-version = 2.9
+version = 3.0
 
 def version_check(x):
     global cur_ver
@@ -18,101 +18,55 @@ def version_check(x):
     else:
         return False
 
+
 def check_ver():
     ans = input('Check for a new version ? y/n: ')
     if ans != 'y':
         return None
-    else :
-        if version_check(version) :
+    else:
+        if version_check(version):
             print("You're on the latest version ! ")
-        else :
-            print("\n !! Version {} is now available !!\n download it from: \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader/releases \n".format(cur_ver))
+        else:
+            print(
+                "\n !! Version {} is now available !!\n download it from: \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader/releases \n".format(
+                    cur_ver))
+
 
 def list_str(s):
     return ' '.join(map(to_lower, s))
 
+
 def to_lower(a):
     return a.lower()
 
+
 def rem_special(a):
-    v=list(a)
-    for j,i in enumerate(v):
+    v = list(a)
+    for j, i in enumerate(v):
         if i.isalnum():
             pass
         else:
             v.pop(j)
     return list_str(v)
 
-def check(x,y):
-    if rem_special(x)==rem_special(y):
+
+def check(x, y):
+    if rem_special(x) == rem_special(y):
         return True
-    else :
+    else:
         return False
-    
+
+
 def downloader(src_url):
-    print('\nGetting Episodes\n')
+    geek = input('geek mode? y/n: ')
+    print('Getting Episodes\n')
     src = requests.get(src_url).text
     soup = bs(src, 'lxml')
-    try:
-        last_page = int(soup.find_all('a', class_="btn btn-flat btn-small")[-2].text)
-    except:
-        last_page = 1
-
-    # ?page=1
-
-    url = lambda x: (src_url + '?page=' + x)
     episode_urls: List[str] = list()
     titles: List[str] = list()
     final: List[str] = list()
-
-    for i in range(1, last_page + 1):
-        source = requests.get(url(str(i))).text
-        souper = bs(source, 'lxml')
-        episode_urls += souper.find_all('a', class_='episode-meta')
-        titles += souper.find_all('div', class_="episode-thumbnail__container")
-    print('Found {} episodes'.format(len(titles)))
-    k = 1
-    # https://yugenani.me/watch/fef088de-e09b-4e07-91c2-c07066ee0c60/
-
-    while True:
-        try:
-            if input('Want all episodes? y/n: ') != 'y':
-                start = int(input('from episode number: ')) - 1
-                end = int(input('till episode number: '))
-            else:
-                start = 0
-                end = len(titles)
-            break
-        except:
-            print('Enter correct input and in the specified range')
-            
-    print('Getting links please wait..\n')
-
-    try:
-        for i, j in zip(titles, episode_urls[start:end]):
-            final += [[str(k) + ' ' + i.img['title'], 'https://yugenani.me' + j['href']]]
-            k += 1
-    except Exception:
-        print('ERROR: Title or link not found')
-
-    for j, i in enumerate(episode_urls[start:end]):
-        souping = bs(requests.get('https://yugenani.me' + i['href']).text, 'lxml')
-        try:
-            final[j].append(souping.find('a', class_="anime-download")['href'])
-        except Exception:
-            final[j].append('id not found (server error)')
-            print('check {} if it works'.format('https://yugenani.me' + i['href']))
-
     dow_urls = list()
-
-    for j, i in enumerate(final):
-        a = 'https://gogo-stream.com/loadserver.php?id' + i[2].split('id')[-1]
-        try:
-            soupinger = bs(requests.get(a).text, 'lxml')
-            final[j][2] = (
-                str(soupinger.find('div', class_="videocontent")).split(';')[-3].split('\n')[-3][:-2].strip()[1:])
-        except:
-            pass
+    g = list()
 
     def vid_selector(link):
         sauce = bs(requests.get(link).content, 'lxml')
@@ -132,48 +86,188 @@ def downloader(src_url):
                         print(ret)
                     return ret
 
-    geek = input('geek mode? y/n: ')
-    g = list()
-    # to make g (quality list)
-    try:
-        vid_selector(final[-1][-1])
-    except:
-        print('There should atleast be 1 episode selected')
-        return None
+    if src_url.split('https://')[1][0] == 'y':
 
-    print()
-    for j, i in enumerate(g):
-        print(j, i)
-    print()
-    
-    while True:
         try:
-            z = int(input('Enter the quality number (eg: 0, 1, 2, 3 ..): '))
-            break
+            last_page = int(soup.find_all('a', class_="btn btn-flat btn-small")[-2].text)
         except:
-            print('Please enter the correct integer')
-    
-    print('Scraping links please wait ...\n')
+            last_page = 1
 
-    for j, i in enumerate(final):
-        final[j].pop(1)
+        # ?page=1
 
-    def final_updater():
-        for j, i in enumerate(final):
+        url = lambda x: (src_url + '?page=' + x)
+
+        for i in range(1, last_page + 1):
+            source = requests.get(url(str(i))).text
+            souper = bs(source, 'lxml')
+            episode_urls += souper.find_all('a', class_='episode-meta')
+            titles += souper.find_all('div', class_="episode-thumbnail__container")
+        print('Found {} episodes'.format(len(titles)))
+        k = 1
+        # https://yugenani.me/watch/fef088de-e09b-4e07-91c2-c07066ee0c60/
+
+        while True:
             try:
-                sou = requests.get(i[1]).text
-            except requests.exceptions.RequestException:
-                print('bad url (dead) {} so it will be removed'.format(final[j][1]))
-                final.pop(j)
-                continue
+                if input('Want all episodes? y/n: ') != 'y':
+                    start = int(input('from episode number: ')) - 1
+                    end = int(input('till episode number: '))
+                else:
+                    start = 0
+                    end = len(titles)
+                break
+            except:
+                print('Enter correct input and in the specified range')
+
+        print('Getting links please wait..\n')
+
+        try:
+            for i, j in zip(titles, episode_urls[start:end]):
+                final += [[str(k) + ' ' + i.img['title'], 'https://yugenani.me' + j['href']]]
+                k += 1
+        except Exception:
+            print('ERROR: Title or link not found')
+
+        for j, i in enumerate(episode_urls[start:end]):
+            souping = bs(requests.get('https://yugenani.me' + i['href']).text, 'lxml')
+            try:
+                final[j].append(souping.find('a', class_="anime-download")['href'])
+            except Exception:
+                final[j].append('id not found (server error)')
+                print('check {} if it works'.format('https://yugenani.me' + i['href']))
+
+        for j, i in enumerate(final):
+            a = 'https://gogo-stream.com/loadserver.php?id' + i[2].split('id')[-1]
+            try:
+                soupinger = bs(requests.get(a).text, 'lxml')
+                final[j][2] = (
+                    str(soupinger.find('div', class_="videocontent")).split(';')[-3].split('\n')[-3][:-2].strip()[1:])
+            except:
+                pass
+
+        # to make g (quality list)
+        try:
+            vid_selector(final[-1][-1])
+        except:
+            print('There should atleast be 1 episode selected')
+            return None
+
+        print()
+        for j, i in enumerate(g):
+            print(j, i)
+        print()
+
+        while True:
+            try:
+                z = int(input('Enter the quality number (eg: 0, 1, 2, 3 ..): '))
+                break
+            except:
+                print('Please enter the correct integer')
+
+        print('Scraping links please wait ...\n')
+
+        for j, i in enumerate(final):
+            final[j].pop(1)
+
+        def final_updater():
+            for j, i in enumerate(final):
+                try:
+                    sou = requests.get(i[1]).text
+                except requests.exceptions.RequestException:
+                    print('bad url (dead) {} so it will be removed'.format(final[j][1]))
+                    final.pop(j)
+                    continue
+                if geek == 'y':
+                    print(j)
+                final[j][1] = get_link(i[1], z)
+
+        final_updater()
+        name = src_url.split('/')[-3]
+    # ______________________end of yugenani specific______________________
+
+    elif src_url.split('https://')[1][0] == 'g':
+
+        def gogo_get(link):
+            # get gogo-stream from episode page
+            soup = bs(requests.get(link).content, 'lxml')
+            return soup.find('li', class_="dowloads").a['href']
+
+        def gogo_urls_get(link, print_length=False):
+            soup = bs(requests.get(link).content, 'lxml')
+            last = int(soup.find('a', class_="active")['ep_end'])
+            if print_length:
+                print('Found {} episodes\n'.format(last))
+            else:
+                anime_name = link.split('/')[-1]
+                template = 'https://gogoanime.so/' + anime_name + '-episode-'
+                next_url = (template + str(i) for i in range(1, last + 1))
+                return next_url
+
+        gogo_urls_get(src_url, True)
+        start = 0
+        end = 1
+
+        def get_range():
+            nonlocal start
+            nonlocal end
+            a = input('want all episodes? y/n: ')
+            try:
+                if a != 'y':
+                    start = int(input('from episode number: ')) - 1
+                    end = int(input('till episode number: '))
+                    return True
+                else:
+                    start = None
+                    end = None
+                    return False
+            except:
+                print('Please carefully enter you input')
+                get_range()
+
+        def make_final_gogo():
+            ans = get_range()
+            print('Getting links please wait... ')
+            for i in list(gogo_urls_get(src_url))[start: end]:
+                dow_link = gogo_get(i)
+                final.append(['ep {}'.format(''.join(dow_link.split('+')[-1])), dow_link])
+
             if geek == 'y':
-                print(j)
-            final[j][1] = get_link(i[1], z)
+                print(final)
 
-    final_updater()
+        make_final_gogo()
+
+        # To make g(quality list)
+        try:
+            vid_selector(final[-1][-1])
+        except:
+            print('There should at least be 1 episode selected')
+            return None
+        
+        def input_quality():
+            print()
+            for j, i in enumerate(g):
+                print(j, i)
+            print()
+
+            while True:
+                try:
+                    z = int(input('Enter the quality number (eg: 0, 1, 2, 3 ..): '))
+                    break
+                except:
+                    print('Please enter the correct integer')
+            print('Scraping links please wait ...\n')
+            return z
+
+        option = input_quality()
+
+        for j, i in enumerate(final):
+            final[j][1] = get_link(i[1], option)
+
+        name = src_url.split('/')[-1]
+    #  __________________________End of Gogo anime specific__________________________
+    else:
+        print('That website is not supported!')
+        return None
     
-    name = src_url.split('/')[-3]
-
     with open('{}.csv'.format(name), 'w') as f:
         write = csv.writer(f)
         for i in final:
@@ -217,14 +311,13 @@ def downloader(src_url):
 
 def give_url():
     while True:
-        src_inp = input('enter url example (https://yugenani.me/anime/akudama-drive/watch/): ')
+        src_inp = input('Enter url example (https://yugenani.me/anime/akudama-drive/watch/\n or \t\t https://gogoanime.so/category/black-clover-tv) : ')
         try:
             src_inp.split('/')[-2] == 'watch'
             print(src_inp)
             return src_inp
-            break
         except:
-            print('Give a correct url (check for /watch/ at the end)')
+            print('Give a correct url (check for /watch/ at the end for yugenani)')
 
 
 def use_csv():
@@ -238,7 +331,6 @@ def use_csv():
                 if check(str(row[0]), inp_name):
                     print(row[1])
                     return row[1]
-                    break
                 line_count += 1
             else:
                 line_count += 1
@@ -252,7 +344,7 @@ def many_anime():
             break
         except Exception:
             print('Enter correct number')
-            
+
     for i in range(number):
         while True:
             var = use_csv()
@@ -263,9 +355,10 @@ def many_anime():
                 downloader(var)
                 break
 
+
 def go():
     check_ver()
-    options = ['Give a specific URL', 'Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)']
+    options = ['Give a specific URL (Gogoanime or Yugenani)', 'Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)']
     for j, i in enumerate(options):
         print(j, i)
     while True:
@@ -283,5 +376,5 @@ def go():
     else:
         print('\nNot implemented yet! Check \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader\n ')
         go()
-
 go()
+

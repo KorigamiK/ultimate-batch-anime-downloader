@@ -7,7 +7,7 @@ import wget
 import io
 from multiprocessing.pool import ThreadPool
 
-version = 3.0
+version = 3.1
 
 def version_check(x):
     global cur_ver
@@ -84,8 +84,11 @@ def downloader(src_url):
                     ret = i.a['href']
                     if geek == 'y':
                         print(ret)
-                    return ret
-
+                    if ret == None:
+                        print('quality {} not available for one episode'.format(opt))
+                        return 'This quality does not exist on the server'
+                    else :
+                        return ret
     if src_url.split('https://')[1][0] == 'y':
 
         try:
@@ -103,7 +106,7 @@ def downloader(src_url):
             episode_urls += souper.find_all('a', class_='episode-meta')
             titles += souper.find_all('div', class_="episode-thumbnail__container")
         print('Found {} episodes'.format(len(titles)))
-        k = 1
+
         # https://yugenani.me/watch/fef088de-e09b-4e07-91c2-c07066ee0c60/
 
         while True:
@@ -119,7 +122,7 @@ def downloader(src_url):
                 print('Enter correct input and in the specified range')
 
         print('Getting links please wait..\n')
-
+        k = start + 1
         try:
             for i, j in zip(titles, episode_urls[start:end]):
                 final += [[str(k) + ' ' + i.img['title'], 'https://yugenani.me' + j['href']]]
@@ -178,7 +181,10 @@ def downloader(src_url):
                     continue
                 if geek == 'y':
                     print(j)
-                final[j][1] = get_link(i[1], z)
+                final_link = get_link(i[1], z)
+                if final_link == None:
+                    print('The selected quality is not availabe for episode {}'.format(final[j][0]))
+                final[j][1] = final_link
 
         final_updater()
         name = src_url.split('/')[-3]
@@ -261,7 +267,8 @@ def downloader(src_url):
 
         for j, i in enumerate(final):
             final[j][1] = get_link(i[1], option)
-
+            if final[j][1] == None:
+                print("The selected quality is not available for {}".format(final[j][0]))
         name = src_url.split('/')[-1]
     #  __________________________End of Gogo anime specific__________________________
     else:
@@ -298,7 +305,12 @@ def downloader(src_url):
 
     if geek == 'y':
         print(dow_urls)
-
+        
+    # check dead links
+    for j,i in enumerate(dow_urls):
+        if i == None:
+            dow_urls.pop(j)
+            
     if input('download {} now? y/n: '.format(name)) == 'y':
         if input('Want parallel downloads? (Sinificantly faster but no progress bar yet!) y/n: ') == 'y':
             make_dirs()
@@ -376,5 +388,6 @@ def go():
     else:
         print('\nNot implemented yet! Check \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader\n ')
         go()
-go()
 
+
+go()

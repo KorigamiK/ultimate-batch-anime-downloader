@@ -7,7 +7,7 @@ import wget
 import io
 from multiprocessing.pool import ThreadPool
 
-version = 3.1
+version = 3.2
 
 def version_check(x):
     global cur_ver
@@ -320,7 +320,7 @@ def downloader(src_url):
         else:
             downloader(dow_urls)
 
-
+#________________From url(0)_____________________________
 def give_url():
     while True:
         src_inp = input('Enter url example (https://yugenani.me/anime/akudama-drive/watch/\n or \t\t https://gogoanime.so/category/black-clover-tv) : ')
@@ -331,7 +331,7 @@ def give_url():
         except:
             print('Give a correct url (check for /watch/ at the end for yugenani)')
 
-
+#___________________Use Csv(1)________________________________________
 def use_csv():
     inp_name = input(
         'Enter the full name csv file (otherwise it will wont work): ')
@@ -366,11 +366,34 @@ def many_anime():
             else:
                 downloader(var)
                 break
+            
+# ______________Search(2)_______________________
+
+def getname(sample):
+    badname=sample.split('/category/')[-1]
+    goodname=' '.join(badname.split('-'))
+    return goodname
+
+#getname('https://gogoanime.so/category/ore-wo-suki-nano-wa-omae-dake-ka-yo-oretachi-no-game-set')
+def search_prep():
+    user_input = input('Enter anime name: ')
+    query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.so%2F"
+    get = '+'.join(user_input.split(' '))
+    a = query.format(get).split(' ')
+    soup = bs(requests.get(a[0]).content,'lxml')
+    search_elements=list()
+    for j,i in enumerate(soup.find('div',class_='\\"thumbnail-recent_search\\"').find_all('a')):
+        badurl='/'.join(str(i['href']).split('\\/'))
+        goodurl=badurl.split('"')[1][:-1]
+        search_elements.append([getname(goodurl), goodurl])
+        print(j, getname(goodurl))
+    opt = int(input('Enter the anime number: '))
+    return search_elements[opt][1]
 
 
 def go():
     check_ver()
-    options = ['Give a specific URL (Gogoanime or Yugenani)', 'Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)']
+    options = ['Give a specific URL (Gogoanime or Yugenani)', 'Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)', 'New! Search for an anime directly']
     for j, i in enumerate(options):
         print(j, i)
     while True:
@@ -385,9 +408,13 @@ def go():
     elif begin == 1:
         many_anime()
         print('\nOMEDETO !!\n')
+    elif begin == 2:
+        downloader(search_prep())
+        print('\nOMEDETO !!\n')
     else:
         print('\nNot implemented yet! Check \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader\n ')
         go()
+        
 
-
-go()
+if __name__ == "__main__": 
+    go()

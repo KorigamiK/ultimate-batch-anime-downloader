@@ -7,7 +7,7 @@ import wget
 import io
 from multiprocessing.pool import ThreadPool
 
-version = 3.2
+version = 3.3
 
 def version_check(x):
     global cur_ver
@@ -59,6 +59,8 @@ def check(x, y):
 
 def downloader(src_url):
     geek = input('geek mode? y/n: ')
+    if geek == 'y':
+        print(found_url)
     print('Getting Episodes\n')
     src = requests.get(src_url).text
     soup = bs(src, 'lxml')
@@ -376,6 +378,7 @@ def getname(sample):
 
 #getname('https://gogoanime.so/category/ore-wo-suki-nano-wa-omae-dake-ka-yo-oretachi-no-game-set')
 def search_prep():
+    global found_url    
     user_input = input('Enter anime name: ')
     query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.so%2F"
     get = '+'.join(user_input.split(' '))
@@ -387,12 +390,27 @@ def search_prep():
         goodurl=badurl.split('"')[1][:-1]
         search_elements.append([getname(goodurl), goodurl])
         print(j, getname(goodurl))
-    opt = int(input('Enter the anime number: '))
-    return search_elements[opt][1]
+    while True :
+        try :
+            opt = int(input('Enter -1 to search again or\nEnter the anime number: '))
+            break
+        except ValueError:
+            print('Enter correct number in range !')
+    try :
+        if opt != -1:
+#            print(search_elements[opt][1])
+            found_url = search_elements[opt][1]
+            return None
+            
+        else :
+            print('OK')
+            search_prep()
+    except :
+        print('Enter correct option in range !')
+        search_prep()
 
 
 def go():
-    check_ver()
     options = ['Give a specific URL (Gogoanime or Yugenani)', 'Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)', 'New! Search for an anime directly']
     for j, i in enumerate(options):
         print(j, i)
@@ -409,12 +427,19 @@ def go():
         many_anime()
         print('\nOMEDETO !!\n')
     elif begin == 2:
-        downloader(search_prep())
-        print('\nOMEDETO !!\n')
+        while True: 
+            try :
+                search_prep()
+                break
+            except AttributeError:
+                print('Sorry, found no results for that (check spelling?)')
+        
+        downloader(found_url)
     else:
         print('\nNot implemented yet! Check \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader\n ')
         go()
         
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
+    check_ver()
     go()

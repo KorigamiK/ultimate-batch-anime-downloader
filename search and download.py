@@ -14,7 +14,7 @@ def search_gogo():
     query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.so%2F"
     get = '+'.join(user_input.split(' '))
     a = query.format(get).split(' ')
-    soup = bs(requests.get(a[0]).content,'lxml')
+    soup = bs(requests.get(a[0]).content,'html.parser')
     search_elements=list()
     for j,i in enumerate(soup.find('div',class_='\\"thumbnail-recent_search\\"').find_all('a')):
         badurl='/'.join(str(i['href']).split('\\/'))

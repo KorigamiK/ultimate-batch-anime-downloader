@@ -11,7 +11,7 @@ version = 3.4
 
 def version_check(x):
     global cur_ver
-    soup = bs(requests.get('https://github.com/KorigamiK/ultimate-batch-anime-downloader/tags').content, 'lxml')
+    soup = bs(requests.get('https://github.com/KorigamiK/ultimate-batch-anime-downloader/tags').content, 'html.parser')
     cur_ver = float(soup.find('h4', class_="flex-auto min-width-0 pr-2 pb-1 commit-title").a.text.strip())
     if cur_ver == x:
         return True
@@ -63,7 +63,7 @@ def downloader(src_url):
         print(src_url)
     print('Getting Episodes\n')
     src = requests.get(src_url).text
-    soup = bs(src, 'lxml')
+    soup = bs(src, 'html.parser')
     episode_urls: List[str] = list()
     titles: List[str] = list()
     final: List[str] = list()
@@ -71,14 +71,14 @@ def downloader(src_url):
     g = list()
 
     def vid_selector(link):
-        sauce = bs(requests.get(link).content, 'lxml')
+        sauce = bs(requests.get(link).content, 'html.parser')
         for i in sauce.find_all('div', class_="dowload"):
             quality = i.text.strip().split("\n")
             if len(quality) == 2:
                 g.append(quality[1].strip())
 
     def get_link(link, opt):
-        sauce = bs(requests.get(link).content, 'lxml')
+        sauce = bs(requests.get(link).content, 'html.parser')
         for i in sauce.find_all('div', class_="dowload"):
             quality = i.text.strip().split("\n")
             if len(quality) == 2:
@@ -104,7 +104,7 @@ def downloader(src_url):
 
         for i in range(1, last_page + 1):
             source = requests.get(url(str(i))).text
-            souper = bs(source, 'lxml')
+            souper = bs(source, 'html.parser')
             episode_urls += souper.find_all('a', class_='episode-meta')
             titles += souper.find_all('div', class_="episode-thumbnail__container")
         print('Found {} episodes'.format(len(titles)))
@@ -133,7 +133,7 @@ def downloader(src_url):
             print('ERROR: Title or link not found')
 
         for j, i in enumerate(episode_urls[start:end]):
-            souping = bs(requests.get('https://yugenani.me' + i['href']).text, 'lxml')
+            souping = bs(requests.get('https://yugenani.me' + i['href']).text, 'html.parser')
             try:
                 final[j].append(souping.find('a', class_="anime-download")['href'])
             except Exception:
@@ -143,7 +143,7 @@ def downloader(src_url):
         for j, i in enumerate(final):
             a = 'https://gogo-stream.com/loadserver.php?id' + i[2].split('id')[-1]
             try:
-                soupinger = bs(requests.get(a).text, 'lxml')
+                soupinger = bs(requests.get(a).text, 'html.parser')
                 final[j][2] = (
                     str(soupinger.find('div', class_="videocontent")).split(';')[-3].split('\n')[-3][:-2].strip()[1:])
             except:
@@ -196,11 +196,11 @@ def downloader(src_url):
 
         def gogo_get(link):
             # get gogo-stream from episode page
-            soup = bs(requests.get(link).content, 'lxml')
+            soup = bs(requests.get(link).content, 'html.parser')
             return soup.find('li', class_="dowloads").a['href']
 
         def gogo_urls_get(link, print_length=False):
-            soup = bs(requests.get(link).content, 'lxml')
+            soup = bs(requests.get(link).content, 'html.parser')
             last = int(soup.find('a', class_="active")['ep_end'])
             if print_length:
                 print('Found {} episodes\n'.format(last))
@@ -383,7 +383,7 @@ def search_prep():
     query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.so%2F"
     get = '+'.join(user_input.split(' '))
     a = query.format(get).split(' ')
-    soup = bs(requests.get(a[0]).content,'lxml')
+    soup = bs(requests.get(a[0]).content,'html.parser')
     search_elements=list()
     for j,i in enumerate(soup.find('div',class_='\\"thumbnail-recent_search\\"').find_all('a')):
         badurl='/'.join(str(i['href']).split('\\/'))

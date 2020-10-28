@@ -7,7 +7,7 @@ import wget
 import io
 from multiprocessing.pool import ThreadPool
 
-version = 3.3
+version = 3.4
 
 def version_check(x):
     global cur_ver
@@ -60,7 +60,7 @@ def check(x, y):
 def downloader(src_url):
     geek = input('geek mode? y/n: ')
     if geek == 'y':
-        print(found_url)
+        print(src_url)
     print('Getting Episodes\n')
     src = requests.get(src_url).text
     soup = bs(src, 'lxml')

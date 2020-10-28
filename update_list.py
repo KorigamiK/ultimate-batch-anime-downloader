@@ -5,7 +5,7 @@ import io
 
 src_url=r'https://yugenani.me/discover/'
 cont=requests.get(src_url).content
-soup=bs(cont, 'lxml')
+soup=bs(cont, 'html.parser')
 # print(soup.prettify())
 
 last=soup.find_all('a', class_="btn btn-flat btn-small")[-2].text

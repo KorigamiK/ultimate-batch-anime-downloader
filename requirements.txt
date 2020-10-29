@@ -1,4 +1,5 @@
-beautifulsoup4==4.8.2
+beautifulsoup4
 lxml==4.6.1
 wget==3.2
-requests==2.21.0
+requests
+tabulate

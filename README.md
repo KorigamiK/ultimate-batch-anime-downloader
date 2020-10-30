@@ -6,7 +6,7 @@ The new and improved version of batch anime downloader. Made a tleast 10x more e
 2. paste the following in your command prompt/ terminal (make sure you have pip in your system path ! [search youtube])
 
 ```
-pip install beautifulsoup4 requests lxml wget
+pip install beautifulsoup4 requests html.parser wget
 ```
 3. Or you can simply (Check that you are on the same directory as requirements.py)
 ```

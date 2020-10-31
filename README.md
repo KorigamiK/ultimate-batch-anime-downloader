@@ -6,7 +6,7 @@ The new and improved version of batch anime downloader. Made a tleast 10x more e
 2. paste the following in your command prompt/ terminal (make sure you have pip in your system path ! [search youtube])
 
 ```
-pip install beautifulsoup4 requests lxml wget
+pip install beautifulsoup4 requests html.parser wget
 ```
 3. Or you can simply (Check that you are on the same directory as requirements.py)
 ```
@@ -20,11 +20,12 @@ pip install -r requirements.txt
 
 # Usage
 0. ### Make sure that you keep all the files in the same folder !
-1. It uses [this website](https://yugenani.me) to scrape
-2. A sample url to pass would be https://yugenani.me/anime/boruto-naruto-next-generations/watch/
-3. Follow the instruction when you run the scripts
-4. Run the update anime_list.py if you are not able to find any new anime (It takes a lot of time to update) 
-5. To use the anime_list.csv method: 
+1. It uses [this website](https://yugenani.me) and [this website](https://gogoanime.so/) to scrape
+2. A sample url to pass would be https://yugenani.me/anime/boruto-naruto-next-generations/watch/ or https://gogoanime.so/category/black-clover-tv
+3. Follow the instruction when you run the script
+4. ### Use the 'search and download.py' script to get more options when you search!
+5. Run the update anime_list.py if you are not able to find any new anime (It takes a lot of time to update) 
+6. To use the anime_list.csv method: 
    - Open it using notepad
    - Use Control+F and type the anime name you want
    - Copy the name you find there

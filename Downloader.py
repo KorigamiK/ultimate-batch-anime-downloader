@@ -23,17 +23,12 @@ def version_check(x):
             "h4", class_="flex-auto min-width-0 pr-2 pb-1 commit-title"
         ).a.text.strip()
     )
-    if cur_ver == x:
-        return True
-    else:
-        return False
+    return cur_ver == x
 
 
 def check_ver():
     ans = input("Check for a new version ? y/n: ")
-    if ans != "y":
-        return None
-    else:
+    if ans == "y":
         if version_check(version):
             print("You're on the latest version ! ")
         else:
@@ -55,18 +50,13 @@ def to_lower(a):
 def rem_special(a):
     v = list(a)
     for j, i in enumerate(v):
-        if i.isalnum():
-            pass
-        else:
+        if not i.isalnum():
             v.pop(j)
     return list_str(v)
 
 
 def check(x, y):
-    if rem_special(x) == rem_special(y):
-        return True
-    else:
-        return False
+    return rem_special(x) == rem_special(y)
 
 
 def downloader(src_url):
@@ -98,19 +88,19 @@ def downloader(src_url):
                     ret = i.a["href"]
                     if geek == "y":
                         print(ret)
-                    if ret == None:
+                    if ret:
+                        return ret
+                    else:
                         print("quality {} not available for one episode".format(opt))
                         return "This quality does not exist on the server"
-                    else:
-                        return ret
-
+                    
     if src_url.split("https://")[1][0] == "y":
 
         try:
             last_page = int(
                 soup.find_all("a", class_="btn btn-flat btn-small")[-2].text
             )
-        except:
+        except Exception:
             last_page = 1
 
         # ?page=1
@@ -128,14 +118,14 @@ def downloader(src_url):
 
         while True:
             try:
-                if input("Want all episodes? y/n: ") != "y":
-                    start = int(input("from episode number: ")) - 1
-                    end = int(input("till episode number: "))
-                else:
+                if input("Want all episodes? y/n: ") == "y":
                     start = 0
                     end = len(titles)
+                else:
+                    start = int(input("from episode number: ")) - 1
+                    end = int(input("till episode number: "))
                 break
-            except:
+            except Exception:
                 print("Enter correct input and in the specified range")
 
         print("Getting links please wait..\n")
@@ -169,15 +159,15 @@ def downloader(src_url):
                     .split("\n")[-3][:-2]
                     .strip()[1:]
                 )
-            except:
+            except Exception:
                 pass
 
         # to make g (quality list)
         try:
             vid_selector(final[-1][-1])
-        except:
+        except Exception:
             print("There should atleast be 1 episode selected")
-            return None
+            return
 
         print()
         for j, i in enumerate(g):
@@ -187,8 +177,11 @@ def downloader(src_url):
         while True:
             try:
                 z = int(input("Enter the quality number (eg: 0, 1, 2, 3 ..): "))
-                break
-            except:
+                if z >= 0 and z < len(g):
+                    break
+                else:
+                    print("Enter correct option in range !")
+            except Exception:
                 print("Please enter the correct integer")
 
         print("Scraping links please wait ...\n")
@@ -207,7 +200,7 @@ def downloader(src_url):
                 if geek == "y":
                     print(j)
                 final_link = get_link(i[1], z)
-                if final_link == None:
+                if not final_link:
                     print(
                         "The selected quality is not availabe for episode {}".format(
                             final[j][0]
@@ -242,22 +235,22 @@ def downloader(src_url):
         end = 1
 
         def get_range():
-            nonlocal start
-            nonlocal end
+            nonlocal start, end
             a = input("want all episodes? y/n: ")
-            try:
-                if a != "y":
+
+            start = None
+            end = None
+
+            if a == "n":
+                try:
                     start = int(input("from episode number: ")) - 1
                     end = int(input("till episode number: "))
-                    return True
-                else:
-                    start = None
-                    end = None
-                    return False
-            except:
-                print("Please carefully enter you input")
-                get_range()
-
+                except Exception:
+                    print("Please carefully enter you input")
+                    get_range()
+                    
+            return a == "n"
+            
         def make_final_gogo():
             ans = get_range()
             print("Getting links please wait... ")
@@ -275,9 +268,9 @@ def downloader(src_url):
         # To make g(quality list)
         try:
             vid_selector(final[-1][-1])
-        except:
+        except Exception:
             print("There should at least be 1 episode selected")
-            return None
+            return
 
         def input_quality():
             print()
@@ -288,8 +281,11 @@ def downloader(src_url):
             while True:
                 try:
                     z = int(input("Enter the quality number (eg: 0, 1, 2, 3 ..): "))
-                    break
-                except:
+                    if z >= 0 and z < len(g):
+                        break
+                    else:
+                        print("Enter correct option in range !")
+                except Exception:
                     print("Please enter the correct integer")
             print("Scraping links please wait ...\n")
             return z
@@ -298,7 +294,7 @@ def downloader(src_url):
 
         for j, i in enumerate(final):
             final[j][1] = get_link(i[1], option)
-            if final[j][1] == None:
+            if not final[j][1]:
                 print(
                     "The selected quality is not available for {}".format(final[j][0])
                 )
@@ -306,7 +302,7 @@ def downloader(src_url):
     #  __________________________End of Gogo anime specific__________________________
     else:
         print("That website is not supported!")
-        return None
+        return
 
     with open("{}.csv".format(name), "w") as f:
         write = csv.writer(f)
@@ -341,13 +337,13 @@ def downloader(src_url):
 
     # check dead links
     for j, i in enumerate(dow_urls):
-        if i == None:
+        if not i:
             dow_urls.pop(j)
 
     if input("download {} now? y/n: ".format(name)) == "y":
         if (
             input(
-                "Want parallel downloads? (Sinificantly faster but no progress bar yet!) y/n: "
+                "Want parallel downloads? (Significantly faster but no progress bar yet!) y/n: "
             )
             == "y"
         ):
@@ -369,7 +365,7 @@ def give_url():
             src_inp.split("/")[-2] == "watch"
             print(src_inp)
             return src_inp
-        except:
+        except Exception:
             print("Give a correct url (check for /watch/ at the end for yugenani)")
 
 
@@ -384,9 +380,7 @@ def use_csv():
                 if check(str(row[0]), inp_name):
                     print(row[1])
                     return row[1]
-                line_count += 1
-            else:
-                line_count += 1
+            line_count += 1
         print(f"Processed {line_count // 2} lines.")
 
 
@@ -401,12 +395,11 @@ def many_anime():
     for i in range(number):
         while True:
             var = use_csv()
-            if var == None:
-                print("series not found Enter EXACT name")
-                pass
-            else:
+            if var:
                 downloader(var)
                 break
+            else:
+                print("series not found Enter EXACT name")
 
 
 # ______________Search(2)_______________________
@@ -440,19 +433,17 @@ def search_prep():
             break
         except ValueError:
             print("Enter correct number in range !")
-    try:
-        if opt != -1:
-            #            print(search_elements[opt][1])
-            found_url = search_elements[opt][1]
-            return None
-
-        else:
-            print("OK")
-            search_prep()
-    except:
+            
+    if opt == -1:
+        print("OK")
+        search_prep()
+    elif opt >= 0 and opt < len(search_elements):
+        #            print(search_elements[opt][1])
+        found_url = search_elements[opt][1]
+        return
+    else:
         print("Enter correct option in range !")
         search_prep()
-
 
 def go():
     options = [

@@ -362,7 +362,7 @@ def give_url():
             "Enter url example\n(https://yugenani.me/anime/akudama-drive/watch/)\n(https://gogoanime.so/category/black-clover-tv)\nor -1 to go back : "
         )
         try:
-            if src_inp =="-1":
+            if src_inp == "-1":
                 go()
                 return
             src_inp.split("/")[-2] == "watch"
@@ -408,7 +408,6 @@ def many_anime():
             else:
                 print("series not found Enter EXACT name")
 
-
 # ______________Search(2)_______________________
 
 
@@ -422,10 +421,9 @@ def getname(sample):
 def search_prep():
     global found_url
     user_input = input("Enter anime name or -1 to go back: ")
-    if user_input=="-1":
+    if user_input == "-1":
         go()
         return
-
     query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.so%2F"
     get = "+".join(user_input.split(" "))
     a = query.format(get).split(" ")
@@ -456,7 +454,7 @@ def search_prep():
         print("Enter correct option in range !")
         search_prep()
 
-def options():
+def go():
     options = [
         "Give a specific URL (Gogoanime or Yugenani)",
         "Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)",
@@ -464,12 +462,6 @@ def options():
     ]
     for j, i in enumerate(options):
         print(j, i)
-    return
-
-
-
-def go():
-    options()
     while True:
         try:
             begin = int(input("Enter the option number: "))

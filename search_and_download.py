@@ -8,31 +8,52 @@ except:
     subprocess.run("pip install tabulate",shell=True)
     
 # ____________GogoAnime____________
-def getname(sample):
-    badname=sample.split('/category/')[-1]
-    goodname=' '.join(badname.split('-'))
-    return goodname
+def getname(url):
+    soup = BeautifulSoup(requests.get(url).text, "html.parser")
+    title = soup.find("meta", property="og:title")["content"].split(" at Go")[0]
+    return title
+def get_gogo_domain():
+    try:
+        r = requests.get('https://gogoanime.tv')
+        if r.status_code != 200:
+            raise
+        return '.tv'
+    except:
+        try:
+            r = requests.get('https://gogoanime.io')
+            if r.status_code != 200:
+                raise
+            return '.io'
+        except:
+            r = requests.get('https://gogoanime.so')
+            if r.status_code != 200:
+                raise
+            return '.so'
 
-def reverse_table(table):
-    return "\n".join(table.split("\n")[::-1])
-
-#getname('https://gogoanime.so/category/ore-wo-suki-nano-wa-omae-dake-ka-yo-oretachi-no-game-set')
+# getname('https://gogoanime.so/category/ore-wo-suki-nano-wa-omae-dake-ka-yo-oretachi-no-game-set')
 def search_gogo():
-    user_input = input('enter anime: ')
-    query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.so%2F"
-    get = '+'.join(user_input.split(' '))
-    a = query.format(get).split(' ')
-    soup = bs(requests.get(a[0]).content,'lxml')
-    search_elements=list()
-    table = [["S.no", "Anime"]]
-    for j,i in enumerate(soup.find('div',class_='\\"thumbnail-recent_search\\"').find_all('a')):
-        badurl='/'.join(str(i['href']).split('\\/'))
-        goodurl=badurl.split('"')[1][:-1]
-        search_elements.append([getname(goodurl), goodurl])
-        table.append([j, getname(goodurl)])
-    print(reverse_table(tabulate(table, headers="firstrow", tablefmt="psql")))
-    opt = int(input('Enter the anime number: '))
-    return search_elements[opt][1]
+    user_input = input("Enter anime: ")
+    domain_extension = get_gogo_domain()
+    url = "https://gogoanime{}/search.html".format(domain_extension)
+    html = requests.get(url, params={"keyword": user_input}).text
+    soup = BeautifulSoup(html, "html.parser")
+    search_results = soup.select("ul.items > li > p > a")
+    headers = ["SlNo", "Title"]
+    count = -1
+    table = []
+    links = []
+    for result in search_results:
+        count += 1
+        entry = [count, result.get("title")]
+        link = "https://gogoanime{}".format(domain_extension) + result["href"]
+        table.append(entry)
+        links.append(link)
+    table = tabulate(table, headers, tablefmt="psql")
+    table = "\n".join(table.split("\n")[::-1])
+    print(table)
+    choice = input("Enter num: [0]: ")
+    choice = 0 if choice == "" else int(choice)
+    return links[choice]
 
 
 # ________________Yugenani_______________

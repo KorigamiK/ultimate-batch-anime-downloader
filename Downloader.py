@@ -7,8 +7,7 @@ import wget
 import io
 from multiprocessing.pool import ThreadPool
 
-version = 3.4
-
+version = 3.5
 
 def version_check(x):
     global cur_ver
@@ -70,7 +69,7 @@ def downloader(src_url):
     titles: List[str] = list()
     final: List[str] = list()
     dow_urls = list()
-    g = list()
+    g = list() #quality list
 
     def vid_selector(link):
         sauce = bs(requests.get(link).content, "html.parser")
@@ -94,7 +93,7 @@ def downloader(src_url):
                         print("quality {} not available for one episode".format(opt))
                         return "This quality does not exist on the server"
                     
-    if src_url.split("https://")[1][0] == "y":
+    if "yugenani" in src_url:
 
         try:
             last_page = int(
@@ -447,9 +446,9 @@ def search_prep():
         print("OK")
         search_prep()
     elif opt >= 0 and opt < len(search_elements):
-        #            print(search_elements[opt][1])
+#            print(search_elements[opt][1])
         found_url = search_elements[opt][1]
-        return
+        return None
     else:
         print("Enter correct option in range !")
         search_prep()
@@ -458,7 +457,8 @@ def go():
     options = [
         "Give a specific URL (Gogoanime or Yugenani)",
         "Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)",
-        "New! Search for an anime directly",
+        "Search for an anime directly",
+        "Use this if option 2 doesn't show the desired results\n"
     ]
     for j, i in enumerate(options):
         print(j, i)
@@ -478,11 +478,14 @@ def go():
         while True:
             try:
                 search_prep()
+                print()
                 break
             except AttributeError:
                 print("Sorry, found no results for that (check spelling?)")
-
         downloader(found_url)
+    elif begin == 3:
+        import search_and_download
+        print("\nOMEDETO !!\n")
     else:
         print(
             "\nNot implemented yet! Check \nhttps://github.com/KorigamiK/ultimate-batch-anime-downloader\n "
@@ -492,4 +495,5 @@ def go():
 
 if __name__ == "__main__":
     check_ver()
+    print()
     go()

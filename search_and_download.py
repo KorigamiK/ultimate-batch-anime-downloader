@@ -1,12 +1,29 @@
-from bs4 import BeautifulSoup as bs
-import requests
-from Downloader import downloader
-try:
-    from tabulate import tabulate
-except:
-    import subprocess
-    subprocess.run("pip install tabulate", shell=True)
+import subprocess
+import sys
 
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+exit_val = False
+try:
+    from bs4 import BeautifulSoup as bs
+except Exception:
+    install('bs4')
+    exit_val = True
+try:
+    import requests
+except Exception:
+    install('requests')
+    exit_val = True
+
+if exit_val:
+    print('\n\nFinished installing the required modules, please restart the script.')
+    print('exitig...')
+    exit()
+
+
+from Downloader import downloader
 # ____________GogoAnime____________
 
 try:
@@ -15,7 +32,6 @@ try:
         title = soup.find("meta", property="og:title")[
             "content"].split(" at Go")[0]
         return title
-
 
     def get_gogo_domain():
         try:
@@ -37,7 +53,6 @@ try:
 
     # getname('https://gogoanime.so/category/ore-wo-suki-nano-wa-omae-dake-ka-yo-oretachi-no-game-set')
 
-
     def search_gogo():
         user_input = input("Enter anime: ")
         domain_extension = get_gogo_domain()
@@ -52,7 +67,8 @@ try:
         for result in search_results:
             count += 1
             entry = [count, result.get("title")]
-            link = "https://gogoanime{}".format(domain_extension) + result["href"]
+            link = "https://gogoanime{}".format(
+                domain_extension) + result["href"]
             table.append(entry)
             links.append(link)
         table = tabulate(table, headers, tablefmt="psql")
@@ -62,11 +78,10 @@ try:
         choice = 0 if choice == "" else int(choice)
         return links[choice]
 
-
     # ________________Yugenani_______________
+
     def correct_format(x):
         return x.replace(' ', '+')
-
 
     def search_yugen(search):
         client = requests.session()
@@ -100,7 +115,6 @@ try:
                 print('Please enter a number in the correct range.')
 
         return 'https://yugenani.me/anime/'+parsed_data[opt]['fields']['slug']+'/watch/'
-
 
     # _____________Driver code_____________
     print('1 download from yugenani?')

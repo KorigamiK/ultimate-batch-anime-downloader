@@ -359,9 +359,12 @@ def downloader(src_url):
 def give_url():
     while True:
         src_inp = input(
-            "Enter url example (https://yugenani.me/anime/akudama-drive/watch/\n or \t\t https://gogoanime.so/category/black-clover-tv) : "
+            "Enter url example\n(https://yugenani.me/anime/akudama-drive/watch/)\n(https://gogoanime.so/category/black-clover-tv)\nor -1 to go back : "
         )
         try:
+            if src_inp =="-1":
+                go()
+                return
             src_inp.split("/")[-2] == "watch"
             print(src_inp)
             return src_inp
@@ -387,7 +390,11 @@ def use_csv():
 def many_anime():
     while True:
         try:
-            number = int(input("How many anime do you want?: "))
+            number = input("How many anime do you want?\nor -1 to go back: ")
+            if number == "-1":
+                go()
+                return
+            number = int(number)
             break
         except Exception:
             print("Enter correct number")
@@ -414,7 +421,11 @@ def getname(sample):
 # getname('https://gogoanime.so/category/ore-wo-suki-nano-wa-omae-dake-ka-yo-oretachi-no-game-set')
 def search_prep():
     global found_url
-    user_input = input("Enter anime name: ")
+    user_input = input("Enter anime name or -1 to go back: ")
+    if user_input=="-1":
+        go()
+        return
+
     query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.so%2F"
     get = "+".join(user_input.split(" "))
     a = query.format(get).split(" ")
@@ -445,7 +456,7 @@ def search_prep():
         print("Enter correct option in range !")
         search_prep()
 
-def go():
+def options():
     options = [
         "Give a specific URL (Gogoanime or Yugenani)",
         "Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)",
@@ -453,6 +464,12 @@ def go():
     ]
     for j, i in enumerate(options):
         print(j, i)
+    return
+
+
+
+def go():
+    options()
     while True:
         try:
             begin = int(input("Enter the option number: "))

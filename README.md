@@ -22,14 +22,15 @@ pip install -r requirements.txt
 0. ### Make sure that you keep all the files in the same folder !
 1. It uses [this website](https://yugenani.me) and [this website](https://gogoanime.so/) to scrape
 2. A sample url to pass would be https://yugenani.me/anime/boruto-naruto-next-generations/watch/ or https://gogoanime.so/category/black-clover-tv
-3. Follow the instruction when you run the script
-4. ### Use the 'search and download.py' script to get more options when you search!
-5. Run the update anime_list.py if you are not able to find any new anime (It takes a lot of time to update) 
-6. To use the anime_list.csv method: 
+3. ### Use the run.bat to run the script (for windows).
+4. Follow the instruction when you run the script
+5. ### Use the 'search and download.py' script to get more options when you search!
+6. Run the "update anime_list.py" if you are not able to find any new anime (It takes a lot of time to update) 
+7. To use the anime_list.csv method: 
    - Open it using notepad
    - Use Control+F and type the anime name you want
    - Copy the name you find there
    - Use this name when you run downloader.py
    - Bonus: You can try to get lucky by typing the name of the anime directly !
-6. ENJOY !
+8. ENJOY !
 > Do leave your suggestion and queries  :)

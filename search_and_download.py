@@ -9,7 +9,7 @@ except:
     
 # ____________GogoAnime____________
 def getname(url):
-    soup = BeautifulSoup(requests.get(url).text, "html.parser")
+    soup = bs(requests.get(url).text, "html.parser")
     title = soup.find("meta", property="og:title")["content"].split(" at Go")[0]
     return title
 def get_gogo_domain():
@@ -36,7 +36,7 @@ def search_gogo():
     domain_extension = get_gogo_domain()
     url = "https://gogoanime{}/search.html".format(domain_extension)
     html = requests.get(url, params={"keyword": user_input}).text
-    soup = BeautifulSoup(html, "html.parser")
+    soup = bs(html, "html.parser")
     search_results = soup.select("ul.items > li > p > a")
     headers = ["SlNo", "Title"]
     count = -1

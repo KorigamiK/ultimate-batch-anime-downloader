@@ -1,11 +1,46 @@
-from typing import List
-from bs4 import BeautifulSoup as bs
-import requests
-import csv
-import os
-import wget
-import io
 from multiprocessing.pool import ThreadPool
+from typing import List
+import subprocess
+import sys
+import os
+import io
+
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+exit_val = False
+
+try:
+    from bs4 import BeautifulSoup as bs
+except Exception:
+    install('bs4')
+    exit_val = True
+
+try:
+    import requests
+except Exception:
+    install('requests')
+    exit_val = True
+
+try:
+    import csv
+except Exception:
+    install('csv')
+    exit_val = True
+
+
+try:
+    import wget
+except Exception:
+    install('wget')
+    exit_val = True
+
+    
+if exit_val:
+    print('\n\nFinished installing the required modules, please restart the script.')
+    print('exitig...')
+    exit()
+
 
 version = 3.5
 

@@ -5,7 +5,7 @@ import sys
 import os
 import io
 
-
+gogoanime_domain = 'vc'
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 exit_val = False
@@ -260,7 +260,7 @@ def downloader(src_url):
                 print("Found {} episodes\n".format(last))
             else:
                 anime_name = link.split("/")[-1]
-                template = "https://gogoanime.vc/" + anime_name + "-episode-"
+                template = f"https://gogoanime.{gogoanime_domain}/" + anime_name + "-episode-"
                 next_url = (template + str(i) for i in range(1, last + 1))
                 return next_url
 

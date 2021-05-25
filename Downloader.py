@@ -29,11 +29,11 @@ except Exception:
     exit_val = True
 
 
-try:
-    import wget
-except Exception:
-    install('wget')
-    exit_val = True
+# try:
+#     import wget
+# except Exception:
+#     install('wget')
+#     exit_val = True
 
     
 if exit_val:
@@ -260,7 +260,7 @@ def downloader(src_url):
                 print("Found {} episodes\n".format(last))
             else:
                 anime_name = link.split("/")[-1]
-                template = "https://gogoanime.so/" + anime_name + "-episode-"
+                template = "https://gogoanime.vc/" + anime_name + "-episode-"
                 next_url = (template + str(i) for i in range(1, last + 1))
                 return next_url
 
@@ -342,7 +342,7 @@ def downloader(src_url):
         write = csv.writer(f)
         for i in final:
             write.writerow(i)
-            dow_urls.append(i[1])
+            dow_urls.append([i[1], i[0]]) # link, the episode number
 
     print("csv created check folder !")
 
@@ -351,13 +351,13 @@ def downloader(src_url):
             os.makedirs("{}".format(name))
         os.chdir("./{}".format(name))
 
-    def downloader(c):
-        make_dirs()
-        for i in c:
-            wget.download(i, os.getcwd())
+    # def downloader(c):
+    #     make_dirs()
+    #     for i in c:
+    #         wget.download(i[0], os.path.join(os.getcwd(), i[1]+'.mp4'))
 
-    def download_url(link):
-        file_name = link.split("token")[0].split("/")[-1][:-1]
+    def download_url(link, file_name=None):
+        file_name = link.split("token")[0].split("/")[-1][:-1] if file_name is None else file_name+'.mp4'
         print("downloading: ", file_name)
         r = requests.get(link, stream=True)
         if r.status_code == requests.codes.ok:
@@ -371,29 +371,29 @@ def downloader(src_url):
 
     # check dead links
     for j, i in enumerate(dow_urls):
-        if not i:
+        if not i[0]:
             dow_urls.pop(j)
 
     if input("download {} now? y/n: ".format(name)) == "y":
-        if (
-            input(
-                "Want parallel downloads? (Significantly faster but no progress bar yet!) y/n: "
-            )
-            == "y"
-        ):
-            make_dirs()
-            results = ThreadPool(5).imap_unordered(download_url, dow_urls)
-            for r in results:
-                print(r)
-        else:
-            downloader(dow_urls)
+        # if (
+        #     input(
+        #         "Want parallel downloads? (Significantly faster but no progress bar yet!) y/n: "
+        #     )
+        #     == "y"
+        # ):
+        make_dirs()
+        results = ThreadPool(5).starmap(download_url, dow_urls)
+        for r in results:
+            print(r)
+        # else:
+        #     downloader(dow_urls)
 
 
 # ________________From url(0)_____________________________
 def give_url():
     while True:
         src_inp = input(
-            "Enter url example\n(https://yugenani.me/anime/akudama-drive/watch/)\n(https://gogoanime.so/category/black-clover-tv)\nor -1 to go back : "
+            "Enter url example\n(https://yugenani.me/anime/akudama-drive/watch/)\n(https://gogoanime.vc/category/black-clover-tv)\nor -1 to go back : "
         )
         try:
             if src_inp == "-1":
@@ -451,14 +451,14 @@ def getname(sample):
     return goodname
 
 
-# getname('https://gogoanime.so/category/ore-wo-suki-nano-wa-omae-dake-ka-yo-oretachi-no-game-set')
+# getname('https://gogoanime.vc/category/ore-wo-suki-nano-wa-omae-dake-ka-yo-oretachi-no-game-set')
 def search_prep():
     global found_url
     user_input = input("Enter anime name or -1 to go back: ")
     if user_input == "-1":
         go()
         return
-    query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.so%2F"
+    query = "https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={}&id=-1&link_web=https%3A%2F%2Fgogoanime.vc%2F"
     get = "+".join(user_input.split(" "))
     a = query.format(get).split(" ")
     soup = bs(requests.get(a[0]).content, "html.parser")
@@ -490,10 +490,10 @@ def search_prep():
 
 def go():
     options = [
-        "Give a specific URL (Gogoanime or Yugenani)",
-        "Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)",
+        "Give a specific URL (Gogoanime or [Deprecated]Yugenani)",
         "Search for an anime directly",
-        "Use this if option 2 doesn't show the desired results\n"
+        "Use this if option 2 doesn't show the desired results",
+        "[Deprecated] Use the anime_list.csv to get many anime! (Including somewhat fuzzy search !)\n",
     ]
     for j, i in enumerate(options):
         print(j, i)
@@ -506,10 +506,10 @@ def go():
     if begin == 0:
         downloader(give_url())
         print("\nOMEDETO !!\n")
-    elif begin == 1:
+    elif begin == 3:
         many_anime()
         print("\nOMEDETO !!\n")
-    elif begin == 2:
+    elif begin == 1:
         while True:
             try:
                 search_prep()

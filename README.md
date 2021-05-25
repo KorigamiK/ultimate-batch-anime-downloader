@@ -1,5 +1,17 @@
 # ultimate-batch-anime-downloader
-The new and improved version of batch anime downloader. Made a tleast 10x more efficient from the older version.
+## [Deprecated]
+
+
+This project should barely work but you should not expect more work to be done to improve or to fix any bugs if it breaks.
+
+I would advice you to use :
+1. [Kickassanime downloader](https://github.com/KorigamiK/kickassanime-downloader) Which should provide you with more and better features than this one. I work on it from time to time.
+2. [Tenshimoe-dl](https://github.com/KorigamiK/tenshimoe-dl) Which works but has a smaller library.
+
+`Of course you can search for better programs than this one. I'm sorry it was never able to become what I had imagined it to become but it layed the ground work for moy other projects. Maybe I'll come back to it in the future and make it what it was imagined to be.`
+
+
+The new and improved version of batch anime downloader. Made more efficient from the older version.
 
 ## Requirements:
 1. python 3.x 
